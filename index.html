@@ -13,7 +13,6 @@
     }
     .draggable {
       cursor: grab;
-      background: #ffffff;
       border: 1px solid #dee2e6;
       border-radius: 8px;
       padding: 12px;
@@ -30,7 +29,6 @@
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 12px;
-      background: #fdfdfd;
       transition: background 0.2s, border-color 0.2s;
     }
     .droppable.hovered {
@@ -105,106 +103,145 @@
         </div>
     </div>
   <div class="container py-5">
-    <div class="row justify-content-around">
-        <div class="col-lg-5 col-md-5">
-            <img src="logo.png" alt="" class="img-fluid">
-        </div>
-        <div class="col-lg-1 col-md-1">
-
-        </div>
-        <div class="col-lg-5 col-md-5">
-            <div class="d-flex">
-                <div class="col-4">
-                    <img src="label1.png" alt="" class="img-fluid">
-                </div>
-                <div class="col-4">
-                    <img src="label1.png" alt="" class="img-fluid">
-                </div>
-                <div class="col-4">
-                    <img src="label1.png" alt="" class="img-fluid">
-                </div>
-            </div>
-        </div>
+  <div class="row justify-content-around align-items-center">
+    <div class="col-lg-5 col-md-5">
+      <img src="logo.png" alt="" class="img-fluid">
     </div>
-    <h2 class="text-center mb-4">Oral-C Matching Game</h2>
-    <div class="row">
-      <!-- Draggable Items -->
-      <div class="col-md-6">
-        <h5 class="mb-3">Mouthwash Types</h5>
-        <div class="list-group" id="draggables">
-          <div class="list-group-item draggable" draggable="true" data-match="regular">Oral-C Regular</div>
-          <div class="list-group-item draggable" draggable="true" data-match="advanced">Oral-C Advanced</div>
-          <div class="list-group-item draggable" draggable="true" data-match="proexpert">Oral-C Pro-Expert</div>
+    <div class="col-lg-1 col-md-1"></div>
+    <div class="col-lg-5 col-md-5">
+      <div class="d-flex gap-2" id="draggables">
+        <div class="col-4">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="regular">
+        </div>
+        <div class="col-4">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="advanced">
+        </div>
+        <div class="col-4">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="proexpert">
         </div>
       </div>
-
-      <!-- Drop Zones -->
-      <div class="col-md-6">
-        <h5 class="mb-3">Match with Benefits</h5>
-        <div class="list-group">
-          <div class="list-group-item droppable" data-match="regular">Thymol, Eucalyptol, Menthol & Methyl Salicylate</div>
-          <div class="list-group-item droppable" data-match="advanced">Anticavity Fluoride Mouthwash</div>
-          <div class="list-group-item droppable" data-match="proexpert">Sodium Fluoride USP 0.05%</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reset Button -->
-    <div class="text-center mt-4">
-      <button id="resetBtn" class="btn btn-warning">Reset Game</button>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Drag & Drop Logic -->
-  <script>
-    const draggables = document.querySelectorAll('.draggable');
-    const droppables = document.querySelectorAll('.droppable');
-    const resetBtn = document.getElementById('resetBtn');
+  <!-- Bottles with drop areas -->
+  <div class="d-flex flex-wrap justify-content-around mt-4">
+    <div class="position-relative mt-38">
+      <div class="position-absolute droppable grab_area" data-match="regular"></div>
+      <img src="btl_1.png" alt="" class="grab_bottom">
+    </div>
+    <div class="position-relative mt-38">
+      <div class="position-absolute droppable grab_area" data-match="advanced"></div>
+      <img src="btl_1.png" alt="" class="grab_bottom">
+    </div>
+    <div class="position-relative mt-38">
+      <div class="position-absolute droppable grab_area" data-match="proexpert"></div>
+      <img src="btl_1.png" alt="" class="grab_bottom">
+    </div>
+  </div>
 
-    draggables.forEach(item => {
-      item.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', item.dataset.match);
-        item.classList.add('dragging');
-      });
-      item.addEventListener('dragend', () => item.classList.remove('dragging'));
+  <style>
+    .grab_bottom {
+      height: 350px;
+    }
+    .grab_area {
+      top: 175px;
+      right: 50%;
+      transform: translateX(30px);
+      height: 60px;
+      width: 80px;
+      background-color: #fff;
+      border: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .grab_area.hovered {
+      border-color: #ff8a00;
+      background-color: #fff6e6;
+    }
+    .grab_area.correct::after {
+      content: "✔";
+      color: green;
+      font-size: 24px;
+      position: absolute;
+      bottom: -30px;
+      right: 0;
+    }
+    .grab_area.incorrect::after {
+      content: "✖";
+      color: red;
+      font-size: 24px;
+      position: absolute;
+      bottom: -30px;
+      right: 0;
+    }
+  </style>
+
+  <!-- Reset Button -->
+  <div class="text-center mt-4">
+    <button id="resetBtn" class="btn btn-warning">Reset Game</button>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const draggables = document.querySelectorAll('.draggable');
+  const droppables = document.querySelectorAll('.droppable');
+  const resetBtn = document.getElementById('resetBtn');
+
+  draggables.forEach(item => {
+    item.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', item.dataset.match);
+      e.dataTransfer.setData('id', item.src); // store image src
+      item.classList.add('dragging');
+    });
+    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+  });
+
+  droppables.forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('hovered');
     });
 
+    zone.addEventListener('dragleave', () => zone.classList.remove('hovered'));
+
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      const draggedData = e.dataTransfer.getData('text/plain');
+      const imgSrc = e.dataTransfer.getData('id');
+      zone.classList.remove('hovered');
+
+      // clear old child if already dropped
+      zone.innerHTML = "";
+
+      if (zone.dataset.match === draggedData) {
+        zone.classList.remove('incorrect');
+        zone.classList.add('correct');
+
+        // append dropped image
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.classList.add('img-fluid');
+        img.style.maxHeight = "60px";
+        zone.appendChild(img);
+      } else {
+        zone.classList.remove('correct');
+        zone.classList.add('incorrect');
+      }
+    });
+  });
+
+  // Reset button logic
+  resetBtn.addEventListener('click', () => {
     droppables.forEach(zone => {
-      zone.addEventListener('dragover', e => {
-        e.preventDefault();
-        zone.classList.add('hovered');
-      });
-
-      zone.addEventListener('dragleave', () => zone.classList.remove('hovered'));
-
-      zone.addEventListener('drop', e => {
-        e.preventDefault();
-        const draggedData = e.dataTransfer.getData('text/plain');
-        zone.classList.remove('hovered');
-
-        if (zone.dataset.match === draggedData) {
-          zone.classList.add('correct');
-          zone.innerHTML = zone.innerHTML + " ✅";
-        } else {
-          zone.classList.add('incorrect');
-          zone.innerHTML = zone.innerHTML + " ❌";
-        }
-      });
+      zone.classList.remove('correct', 'incorrect', 'hovered');
+      zone.innerHTML = "";
     });
+  });
+</script>
 
-    // Reset button logic
-    resetBtn.addEventListener('click', () => {
-      droppables.forEach(zone => {
-        zone.classList.remove('correct', 'incorrect');
-        zone.innerHTML = zone.getAttribute('data-match') === 'regular'
-          ? "Thymol, Eucalyptol, Menthol & Methyl Salicylate"
-          : zone.getAttribute('data-match') === 'advanced'
-          ? "Anticavity Fluoride Mouthwash"
-          : "Sodium Fluoride USP 0.05%";
-      });
-    });
-  </script>
 </body>
 </html>
