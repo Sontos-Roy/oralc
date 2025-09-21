@@ -6,242 +6,509 @@
   <title>Oral-C Matching Game</title>
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <style>
+    /* ---------- page / form ---------- */
     body {
       background: #000038;
+      color: #fff;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+
+    /* input visual area (kept from your design) */
+    .input_box { position: relative; margin-bottom: 20px; }
+    .input_bg {
+      background-image: url("input.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      width: 100%;
+      height: 100px;
+    }
+    .input_form {
+      background-color: transparent;
+      position: absolute;
+      top: 25px;
+      width: 65%;
+      height: 50px;
+      transform: translate(26%, 0);
+      border: none;
+      font-weight: bold;
+      font-size: 35px;
+      color: black;
+    }
+    .input_form:focus { background-color: transparent; outline: none; }
+
+    /* ---------- draggables / droppables ---------- */
     .draggable {
       cursor: grab;
       border: 1px solid #dee2e6;
       border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      transition: transform 0.2s;
+      padding: 8px;
+      margin: 6px;
+      transition: transform .12s ease;
     }
-    .draggable:active {
-      cursor: grabbing;
-      transform: scale(1.05);
-    }
+    .draggable:active { cursor: grabbing; transform: scale(1.04); }
+
     .droppable {
       min-height: 70px;
       border: 2px dashed #ccc;
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 12px;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.18s, border-color 0.18s;
+      position: relative;
     }
-    .droppable.hovered {
-      border-color: #0d6efd;
-      background: #e9f3ff;
+    .droppable.hovered { border-color: #0d6efd; background: #e9f3ff; }
+
+    .droppable.correct {
+      background: transparent; /* keep image visible */
+      border-color: transparent;
     }
-    .correct {
-      background: #d4edda !important;
-      border-color: #28a745 !important;
-      color: #155724;
-    }
-    .incorrect {
+    .droppable.incorrect {
       background: #f8d7da !important;
       border-color: #dc3545 !important;
-      color: #721c24;
     }
-    .first_brand{
-        font-weight: bold;
-        font-size: 24px;
+
+    /* bottle images */
+    .grab_bottom { height: 350px; display: block; }
+
+    /* different droppable placement styles (step specific) */
+    .grab_area { top: 162px; right: 50%; transform: translateX(40px); height: 60px; width: 96px; background-color: transparent; display:flex; align-items:center; justify-content:center; position: absolute; }
+    .grab_area2 { top: calc(100% + 20px); right: 50%; transform: translateX(75px); height: 60px; width: 150px; background-color: transparent; display:flex; align-items:center; justify-content:center; position: absolute; }
+
+    /* check mark overlay (uses check.png) */
+    .droppable.correct::after {
+      content: "";
+      position: absolute;
+      top: -90px;
+      right: -120px;
+      background-image: url("check.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 80px;
+      height: 80px;
     }
-    .input_box{
-        position: relative;
-        margin-bottom: 20px;
+
+    /* submit / next button (replaces draggables area) */
+    .next-button {
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
     }
-    .input_bg{
-        background-image: url("input.png");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        width: 100%;
-        height: 100px;
+    .next-button img { display:block; }
+
+    /* small helper */
+    .hidden { display: none !important; }
+
+    /* controls */
+    .controls { margin-top: 18px; }
+    .score-box { margin-top: 12px; font-weight: 700; color: #ffd966; }
+
+    /* responsiveness / spacing */
+    @media (max-width: 767px) {
+      .grab_bottom { height: 220px; }
+      .input_form { font-size: 20px; width: 75%; transform: translate(12%, 0); }
     }
-    .input_form{
-        background-color: transparent;
-        position: absolute;
-        top: 25px;
-        width: 65%;
-        height: 50px;
-        transform: translate(26%, 0);
-        border: none;
-        font-weight: bold;
-        font-size: 35px;
-        color: black;
-    }
-    .input_form:focus{
-        background-color: transparent;
-    }
+
   </style>
 </head>
 <body>
-    <div class="text-center col-lg-4 col-md-5 m-auto">
-        <img src="logo.png" alt="" class="img-fluid">
-        <div>
-            <div class="mt-5">
-                <div class="input_box">
-                    <div class="input_bg"></div>
-                    <input type="text" class="form-control shadow-none input_form text-center" placeholder="Name">
-                </div>
-            </div>
-            <div class="mt-5">
-                <div class="input_box">
-                    <div class="input_bg"></div>
-                    <input type="text" class="form-control shadow-none input_form text-center" placeholder="Email">
-                </div>
-            </div>
-            <div class="mt-5">
-                <div class="input_box">
-                    <div class="input_bg"></div>
-                    <input type="text" class="form-control shadow-none input_form text-center" placeholder="Mobile">
-                </div>
-            </div>
-        </div>
-    </div>
-  <div class="container py-5">
-  <div class="row justify-content-around align-items-center">
-    <div class="col-lg-5 col-md-5">
-      <img src="logo.png" alt="" class="img-fluid">
-    </div>
-    <div class="col-lg-1 col-md-1"></div>
-    <div class="col-lg-5 col-md-5">
-      <div class="d-flex gap-2" id="draggables">
-        <div class="col-4">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="regular">
-        </div>
-        <div class="col-4">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="advanced">
-        </div>
-        <div class="col-4">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="proexpert">
-        </div>
+  <!-- header / user inputs (unchanged look) -->
+  <div class="text-center col-lg-4 col-md-5 m-auto py-3">
+    <img src="logo.png" alt="logo" class="img-fluid mb-2">
+    <div class="mt-3">
+      <div class="input_box">
+        <div class="input_bg"></div>
+        <input type="text" class="form-control shadow-none input_form text-center" placeholder="Name">
+      </div>
+      <div class="input_box">
+        <div class="input_bg"></div>
+        <input type="text" class="form-control shadow-none input_form text-center" placeholder="Email">
+      </div>
+      <div class="input_box">
+        <div class="input_bg"></div>
+        <input type="text" class="form-control shadow-none input_form text-center" placeholder="Mobile">
       </div>
     </div>
   </div>
 
-  <!-- Bottles with drop areas -->
-  <div class="d-flex flex-wrap justify-content-around mt-4">
-    <div class="position-relative mt-38">
-      <div class="position-absolute droppable grab_area" data-match="regular"></div>
-      <img src="btl_1.png" alt="" class="grab_bottom">
+  <div class="container py-5">
+
+    <!-- GAME WRAPPER -->
+    <div id="game">
+
+      <!-- STEP 1 -->
+      <section id="step-1" class="game-step" data-step="1">
+        <div class="row justify-content-around align-items-center">
+          <div class="col-lg-5 col-md-5">
+            <img src="logo.png" alt="" class="img-fluid">
+          </div>
+
+          <!-- DRAGGABLE AREA (will be populated by JS) -->
+          <div class="col-lg-5 col-md-5">
+            <div id="draggables-1" class="row" aria-label="Draggable labels for step 1"></div>
+          </div>
+        </div>
+
+        <!-- Bottles for step 1 -->
+        <div class="d-flex flex-wrap justify-content-around mt-4" id="dropzone-area-1">
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area" data-match="regular" aria-label="drop regular"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area" data-match="advanced" aria-label="drop advanced"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area" data-match="proexpert" aria-label="drop proexpert"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+        </div>
+
+      </section>
+
+      <!-- STEP 2 (hidden initially) -->
+      <section id="step-2" class="game-step hidden" data-step="2">
+        <div class="row justify-content-around align-items-center">
+          <div class="col-lg-5 col-md-5">
+            <img src="logo.png" alt="" class="img-fluid">
+          </div>
+
+          <!-- DRAGGABLE AREA for step 2 -->
+          <div class="col-lg-5 col-md-5">
+            <div id="draggables-2" class="row flex-wrap" aria-label="Draggable labels for step 2"></div>
+          </div>
+        </div>
+
+        <!-- Bottles for step 2 (different placement class) -->
+        <div class="d-flex flex-wrap justify-content-around mt-4" id="dropzone-area-2">
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area2" data-match="regular" aria-label="drop regular step2"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area2" data-match="advanced" aria-label="drop advanced step2"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+          <div class="position-relative mt-3">
+            <div class="position-absolute droppable grab_area2" data-match="proexpert" aria-label="drop proexpert step2"></div>
+            <img src="btl_1.png" alt="bottle" class="grab_bottom">
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+      </section>
+
+      <!-- FINAL SUMMARY -->
+      <section id="final-screen" class="hidden text-center py-5">
+        <h2 class="mb-3">🎉 Level Complete</h2>
+        <p class="mb-3">You completed <span id="completed-count">0</span> / <span id="total-steps">2</span> steps.</p>
+        <button id="restart-game" class="btn btn-primary">Restart Game</button>
+        <button id="clear-all-progress" class="btn btn-danger ms-2">Clear Progress</button>
+      </section>
+
+    </div> <!-- /game -->
+
+    <!-- GLOBAL CONTROLS -->
+    <div class="controls text-center mt-4">
+      <button id="reset-current" class="btn btn-warning">Reset Current Step</button>
+      <button id="clear-storage" class="btn btn-danger ms-2">Clear All Progress</button>
+      <div class="score-box" id="score-box">Score: <span id="score-count">0</span></div>
     </div>
-    <div class="position-relative mt-38">
-      <div class="position-absolute droppable grab_area" data-match="advanced"></div>
-      <img src="btl_1.png" alt="" class="grab_bottom">
-    </div>
-    <div class="position-relative mt-38">
-      <div class="position-absolute droppable grab_area" data-match="proexpert"></div>
-      <img src="btl_1.png" alt="" class="grab_bottom">
-    </div>
-  </div>
 
-  <style>
-    .grab_bottom {
-      height: 350px;
-    }
-    .grab_area {
-      top: 175px;
-      right: 50%;
-      transform: translateX(30px);
-      height: 60px;
-      width: 80px;
-      background-color: #fff;
-      border: 2px dashed #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .grab_area.hovered {
-      border-color: #ff8a00;
-      background-color: #fff6e6;
-    }
-    .grab_area.correct::after {
-      content: "✔";
-      color: green;
-      font-size: 24px;
-      position: absolute;
-      bottom: -30px;
-      right: 0;
-    }
-    .grab_area.incorrect::after {
-      content: "✖";
-      color: red;
-      font-size: 24px;
-      position: absolute;
-      bottom: -30px;
-      right: 0;
-    }
-  </style>
+  </div> <!-- /container -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+/* =========================
+   Configuration
+   ========================= */
 
-  <!-- Reset Button -->
-  <div class="text-center mt-4">
-    <button id="resetBtn" class="btn btn-warning">Reset Game</button>
-  </div>
-</div>
+const totalSteps = 2; // update if you add more steps
+const stepTemplates = {
+  1: [
+    { src: "label.png", match: "regular" },
+    { src: "label.png", match: "advanced" },
+    { src: "label.png", match: "proexpert" }
+  ],
+  2: [
+    { src: "text_label.png", match: "regular" },
+    { src: "text_label.png", match: "advanced" },
+    { src: "text_label.png", match: "proexpert" }
+  ]
+};
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+// session key
+const STORAGE_KEY = "oralc_game_steps";
 
-<script>
-  const draggables = document.querySelectorAll('.draggable');
-  const droppables = document.querySelectorAll('.droppable');
-  const resetBtn = document.getElementById('resetBtn');
+/* =========================
+   State
+   ========================= */
+let currentStep = 1;
+let currentCorrect = 0;
 
-  draggables.forEach(item => {
-    item.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', item.dataset.match);
-      e.dataTransfer.setData('id', item.src); // store image src
-      item.classList.add('dragging');
-    });
-    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+/* load scores array from sessionStorage (array of booleans indexed by step-1) */
+function loadScores() {
+  const raw = sessionStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : Array(totalSteps).fill(false);
+}
+function saveScores(scores) {
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+}
+function updateScoreUI() {
+  const scores = loadScores();
+  const completed = scores.filter(Boolean).length;
+  document.getElementById("score-count").textContent = completed;
+  document.getElementById("completed-count").textContent = completed;
+  document.getElementById("total-steps").textContent = totalSteps;
+}
+
+/* =========================
+   Utilities
+   ========================= */
+function makeDragId(step, idx) {
+  return `drag-${step}-${idx}-${Date.now().toString(36).slice(-4)}`;
+}
+
+/* clone node trick to remove old event listeners on droppables */
+function resetDroppableListeners(stepEl) {
+  const zones = stepEl.querySelectorAll(".droppable");
+  zones.forEach(z => {
+    const fresh = z.cloneNode(true);
+    z.parentNode.replaceChild(fresh, z);
   });
+  return stepEl.querySelectorAll(".droppable");
+}
+
+/* =========================
+   Initialize draggables for a step
+   ========================= */
+function injectDraggables(step) {
+  const container = document.getElementById(`draggables-${step}`);
+  container.innerHTML = ""; // empty first
+
+  const items = stepTemplates[step] || [];
+  items.forEach((it, idx) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "col-4";
+
+    const img = document.createElement("img");
+    img.src = it.src;
+    img.className = "img-fluid draggable";
+    img.draggable = true;
+    img.dataset.match = it.match;
+    img.dataset.dragId = makeDragId(step, idx);
+
+    // attach dragstart / dragend here
+    img.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("match", img.dataset.match);
+      e.dataTransfer.setData("src", img.src);
+      e.dataTransfer.setData("dragId", img.dataset.dragId);
+      // small effect
+      img.classList.add("dragging");
+    });
+    img.addEventListener("dragend", () => img.classList.remove("dragging"));
+
+    wrapper.appendChild(img);
+    container.appendChild(wrapper);
+  });
+}
+
+/* =========================
+   Initialize drop zones for a step
+   - ensures listeners are fresh (no duplicates)
+   ========================= */
+function initDroppablesForStep(step) {
+  const stepEl = document.getElementById(`step-${step}`);
+  const droppables = resetDroppableListeners(stepEl); // fresh nodes
+  currentCorrect = 0;
+  const totalDroppables = droppables.length;
 
   droppables.forEach(zone => {
-    zone.addEventListener('dragover', e => {
+    // hover visual
+    zone.addEventListener("dragover", (e) => {
       e.preventDefault();
-      zone.classList.add('hovered');
+      zone.classList.add("hovered");
     });
+    zone.addEventListener("dragleave", () => zone.classList.remove("hovered"));
 
-    zone.addEventListener('dragleave', () => zone.classList.remove('hovered'));
-
-    zone.addEventListener('drop', e => {
+    // drop logic
+    zone.addEventListener("drop", (e) => {
       e.preventDefault();
-      const draggedData = e.dataTransfer.getData('text/plain');
-      const imgSrc = e.dataTransfer.getData('id');
-      zone.classList.remove('hovered');
+      zone.classList.remove("hovered");
 
-      // clear old child if already dropped
+      const draggedMatch = e.dataTransfer.getData("match");
+      const draggedSrc = e.dataTransfer.getData("src");
+      const draggedId = e.dataTransfer.getData("dragId");
+
+      // clear prior content (safe)
       zone.innerHTML = "";
 
-      if (zone.dataset.match === draggedData) {
-        zone.classList.remove('incorrect');
-        zone.classList.add('correct');
+      // correct?
+      if (zone.dataset.match === draggedMatch && !zone.classList.contains("correct")) {
+        zone.classList.remove("incorrect");
+        zone.classList.add("correct");
 
-        // append dropped image
-        const img = document.createElement('img');
-        img.src = imgSrc;
-        img.classList.add('img-fluid');
+        // append image into the drop zone
+        const img = document.createElement("img");
+        img.src = draggedSrc;
+        img.className = "img-fluid";
         img.style.maxHeight = "60px";
+        img.draggable = false; // do not allow re-dragging a dropped image
         zone.appendChild(img);
+
+        // remove the original draggable element using dragId
+        const draggedEl = document.querySelector(`[data-drag-id="${draggedId}"]`);
+        if (draggedEl) {
+          // remove the wrapper (parent)
+          const wrapper = draggedEl.closest("div");
+          if (wrapper) wrapper.remove();
+          else draggedEl.remove();
+        }
+
+        currentCorrect++;
+
+        // when all droppables of this step are correct => show submit/next
+        if (currentCorrect === totalDroppables) {
+          showSubmitButtonForStep(step);
+        }
       } else {
-        zone.classList.remove('correct');
-        zone.classList.add('incorrect');
+        // incorrect feedback
+        zone.classList.remove("correct");
+        zone.classList.add("incorrect");
+        setTimeout(() => zone.classList.remove("incorrect"), 800);
       }
     });
   });
+}
 
-  // Reset button logic
-  resetBtn.addEventListener('click', () => {
-    droppables.forEach(zone => {
-      zone.classList.remove('correct', 'incorrect', 'hovered');
-      zone.innerHTML = "";
-    });
+/* =========================
+   Show submit / next button (replaces draggable area)
+   ========================= */
+function showSubmitButtonForStep(step) {
+  const container = document.getElementById(`draggables-${step}`);
+  // inject the animated next button into the same area
+  container.innerHTML = `
+    <div class="next-button animate__animated animate__bounceIn" id="submit-step-${step}" role="button" aria-pressed="false">
+      <img src="next.png" alt="Next" width="150">
+    </div>
+  `;
+
+  // attach click handler to the inserted element
+  const submitEl = document.getElementById(`submit-step-${step}`);
+  if (!submitEl) return;
+  submitEl.addEventListener("click", () => handleSubmitStep(step));
+}
+
+/* =========================
+   Handle submit / next step
+   - save progress to sessionStorage and move to next or final
+   ========================= */
+function handleSubmitStep(step) {
+  // mark step complete in session storage
+  const scores = loadScores();
+  scores[step - 1] = true;
+  saveScores(scores);
+  updateScoreUI();
+
+  // proceed to next step or final screen
+  const nextStep = step + 1;
+  if (nextStep <= totalSteps) {
+    // hide this step, show next
+    document.getElementById(`step-${step}`).classList.add("hidden");
+    document.getElementById(`step-${nextStep}`).classList.remove("hidden");
+    currentStep = nextStep;
+    // initialize next step
+    injectDraggables(nextStep);
+    initDroppablesForStep(nextStep);
+  } else {
+    // finished all steps -> show final summary
+    document.getElementById(`step-${step}`).classList.add("hidden");
+    document.getElementById("final-screen").classList.remove("hidden");
+  }
+}
+
+/* =========================
+   Reset current step (rebuild draggables + clear drops)
+   ========================= */
+function resetCurrentStep() {
+  const step = currentStep;
+  const stepEl = document.getElementById(`step-${step}`);
+  // clear droppables content & classes
+  stepEl.querySelectorAll(".droppable").forEach(z => {
+    z.classList.remove("correct", "incorrect", "hovered");
+    z.innerHTML = ""; // remove any appended images
   });
+  // re-inject draggables
+  injectDraggables(step);
+  initDroppablesForStep(step);
+  // also hide final screen if visible
+  document.getElementById("final-screen").classList.add("hidden");
+}
+
+/* =========================
+   Clear all progress (session)
+   ========================= */
+function clearAllProgress() {
+  sessionStorage.removeItem(STORAGE_KEY);
+  // reset UI to step 1
+  document.getElementById("final-screen").classList.add("hidden");
+  for (let s = 1; s <= totalSteps; s++) {
+    document.getElementById(`step-${s}`).classList.add("hidden");
+  }
+  document.getElementById("step-1").classList.remove("hidden");
+  currentStep = 1;
+  injectDraggables(1);
+  initDroppablesForStep(1);
+  updateScoreUI();
+}
+
+/* =========================
+   Restart full game (from final screen)
+   ========================= */
+function restartGame() {
+  clearAllProgress();
+}
+
+/* =========================
+   Initialization on page load
+   ========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  // set initial UI
+  document.getElementById("step-1").classList.remove("hidden");
+  for (let s = 2; s <= totalSteps; s++) {
+    document.getElementById(`step-${s}`).classList.add("hidden");
+  }
+  // inject and init step 1
+  injectDraggables(1);
+  initDroppablesForStep(1);
+
+  // hook global control buttons
+  document.getElementById("reset-current").addEventListener("click", resetCurrentStep);
+  document.getElementById("clear-storage").addEventListener("click", () => {
+    if (confirm("Clear all saved progress?")) {
+      clearAllProgress();
+    }
+  });
+
+  document.getElementById("clear-all-progress").addEventListener("click", () => {
+    if (confirm("Clear all saved progress?")) clearAllProgress();
+  });
+  document.getElementById("restart-game").addEventListener("click", () => {
+    if (confirm("Restart the game?")) restartGame();
+  });
+
+  updateScoreUI();
+});
 </script>
 
 </body>
+
+
+<!-- Bootstrap JS -->
+
 </html>

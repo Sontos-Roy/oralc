@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oral-C Matching Game</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    body {
+      background: #000038;
+      color: white;
+    }
+    .draggable {
+      cursor: grab;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+      margin: 6px;
+      transition: transform 0.2s;
+    }
+    .draggable:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+    .droppable {
+      min-height: 70px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .droppable.hovered {
+      border-color: #0d6efd;
+      background: #e9f3ff;
+    }
+    .grab_bottom {
+      height: 300px;
+    }
+    .grab_area {
+      top: 120px;
+      right: 50%;
+      transform: translateX(40px);
+      height: 60px;
+      width: 96px;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .grab_area.correct::after {
+      content: "";
+      position: absolute;
+      top: -90px;
+      right: -120px;
+      background-image: url(check.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 80px;
+      height: 80px;
+    }
+    #nextStepBtn {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container py-5">
+
+  <!-- Step container -->
+  <div id="step1" class="game-step">
+    <h2 class="text-center mb-4">Step 1 - Match Labels</h2>
+    <div class="row justify-content-around align-items-center">
+      <div class="col-lg-5 col-md-5">
+        <img src="logo.png" alt="" class="img-fluid">
+      </div>
+      <div class="col-lg-5 col-md-5">
+        <div class="d-flex gap-2 flex-wrap" id="draggables1">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="regular">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="advanced">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="proexpert">
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottles -->
+    <div class="d-flex flex-wrap justify-content-around mt-4">
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="regular"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="advanced"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="proexpert"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div id="step2" class="game-step d-none">
+    <h2 class="text-center mb-4">Step 2 - New Design</h2>
+    <div class="row justify-content-around align-items-center">
+      <div class="col-lg-5 col-md-5">
+        <img src="logo.png" alt="" class="img-fluid">
+      </div>
+      <div class="col-lg-5 col-md-5">
+        <div class="d-flex gap-2 flex-wrap" id="draggables2">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="one">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="two">
+          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="three">
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottles -->
+    <div class="d-flex flex-wrap justify-content-around mt-4">
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="one"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="two"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+      <div class="position-relative">
+        <div class="position-absolute droppable grab_area" data-match="three"></div>
+        <img src="btl_1.png" alt="" class="grab_bottom">
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="text-center mt-4">
+    <button id="resetBtn" class="btn btn-warning">Reset Game</button>
+    <button id="clearSessionBtn" class="btn btn-danger">Clear Score</button>
+    <button id="nextStepBtn" class="btn btn-success animate__animated animate__bounceIn">Next Step</button>
+  </div>
+
+  <!-- Score -->
+  <div class="text-center mt-3">
+    <h4>Score: <span id="scoreDisplay">0</span></h4>
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+  let totalCorrect = 0;
+
+  // Load saved score
+  let score = sessionStorage.getItem("gameScore") ? JSON.parse(sessionStorage.getItem("gameScore")) : [];
+  updateScoreDisplay();
+
+  function initGame(stepId) {
+    const draggables = document.querySelectorAll(`#draggables${stepId} .draggable`);
+    const droppables = document.querySelectorAll(`#step${stepId} .droppable`);
+
+    draggables.forEach(item => {
+      item.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('match', item.dataset.match);
+        e.dataTransfer.setData('id', item.src);
+      });
+    });
+
+    droppables.forEach(zone => {
+      zone.addEventListener('dragover', e => e.preventDefault());
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        const draggedData = e.dataTransfer.getData('match');
+        const imgSrc = e.dataTransfer.getData('id');
+
+        if (zone.dataset.match === draggedData) {
+          zone.classList.add('correct');
+          zone.innerHTML = `<img src="${imgSrc}" class="img-fluid" style="max-height:60px;">`;
+
+          // remove from draggable list
+          const draggedEl = document.querySelector(`.draggable[data-match="${draggedData}"]`);
+          if (draggedEl) draggedEl.remove();
+
+          totalCorrect++;
+          if (totalCorrect === droppables.length) {
+            score.push(1); // add 1 point for completing step
+            sessionStorage.setItem("gameScore", JSON.stringify(score));
+            updateScoreDisplay();
+            document.getElementById("nextStepBtn").style.display = "inline-block";
+          }
+        } else {
+          zone.classList.add('incorrect');
+        }
+      });
+    });
+  }
+
+  function updateScoreDisplay() {
+    document.getElementById("scoreDisplay").textContent = score.length;
+  }
+
+  // Reset
+  document.getElementById("resetBtn").addEventListener("click", () => location.reload());
+
+  // Clear session
+  document.getElementById("clearSessionBtn").addEventListener("click", () => {
+    sessionStorage.removeItem("gameScore");
+    score = [];
+    updateScoreDisplay();
+  });
+
+  // Next step
+  document.getElementById("nextStepBtn").addEventListener("click", () => {
+    document.getElementById(`step${currentStep}`).classList.add("d-none");
+    currentStep++;
+    document.getElementById(`step${currentStep}`).classList.remove("d-none");
+    document.getElementById("nextStepBtn").style.display = "none";
+    totalCorrect = 0;
+    initGame(currentStep);
+  });
+
+  // Init first step
+  initGame(1);
+</script>
+</body>
+</html>
