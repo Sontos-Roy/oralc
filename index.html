@@ -262,6 +262,7 @@
     </div>
 
   </div> <!-- /container -->
+  <audio id="success-sound" src="success.mp3" preload="auto"></audio>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -292,6 +293,13 @@ const STORAGE_KEY = "oralc_game_steps";
 let currentStep = 1;
 let currentCorrect = 0;
 
+function playSuccessSound() {
+  const audio = document.getElementById("success-sound");
+  if (audio) {
+    audio.currentTime = 0; // restart from beginning
+    audio.play();
+  }
+}
 /* load scores array from sessionStorage (array of booleans indexed by step-1) */
 function loadScores() {
   const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -393,7 +401,8 @@ function initDroppablesForStep(step) {
       if (zone.dataset.match === draggedMatch && !zone.classList.contains("correct")) {
         zone.classList.remove("incorrect");
         zone.classList.add('correct', 'animate__animated', 'animate__bounceIn');
-
+        // play success sound
+        playSuccessSound();
         // append image into the drop zone
         const img = document.createElement("img");
         img.src = draggedSrc;
@@ -456,6 +465,9 @@ function handleSubmitStep(step) {
   saveScores(scores);
   updateScoreUI();
 
+  // play success sound for completing the step
+  playSuccessSound();
+
   // proceed to next step or final screen
   const nextStep = step + 1;
   if (nextStep <= totalSteps) {
@@ -470,6 +482,8 @@ function handleSubmitStep(step) {
     // finished all steps -> show final summary
     document.getElementById(`step-${step}`).classList.add("hidden");
     document.getElementById("final-screen").classList.remove("hidden");
+    // play success sound for final completion
+    playSuccessSound();
   }
 }
 
