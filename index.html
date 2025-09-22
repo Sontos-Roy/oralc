@@ -7,7 +7,7 @@
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
+   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet"/>
   <style>
     /* ---------- page / form ---------- */
     body {
@@ -151,414 +151,538 @@
 </head>
 <body>
   <!-- header / user inputs (unchanged look) -->
-  <div class="text-center col-lg-4 col-md-5 m-auto">
+  <div class="text-center col-lg-4 col-md-5 m-auto" id="player-form">
     <img src="assets/game_logo.png" alt="" class="img-fluid animate__animated animate__fadeInDown">
     <div>
       <div class="mt-5">
         <div class="input_box">
           <div class="input_bg"></div>
-          <input type="text" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn" placeholder="Name">
+          <input type="text" id="player-name" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn" placeholder="Name">
         </div>
       </div>
       <div class="mt-5">
         <div class="input_box">
           <div class="input_bg"></div>
-          <input type="text" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-1s" placeholder="Email">
+          <input type="text" id="player-email" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-1s" placeholder="Email">
         </div>
       </div>
       <div class="mt-5">
         <div class="input_box">
           <div class="input_bg"></div>
-          <input type="text" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-2s" placeholder="Mobile">
+          <input type="text" id="player-mobile" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-2s" placeholder="Mobile">
         </div>
+      </div>
+      <div class="text-center">
+        <button id="start-game-btn" class="btn btn-danger">Start Game</button>
       </div>
     </div>
   </div>
+  <!-- Game root: steps will render here -->
+  <div class="container" id="game-root" aria-live="polite" style="min-height:420px;"></div>
 
-  <div class="container py-5">
-
-    <!-- GAME WRAPPER -->
-    <div id="game" class="animate__animated animate__fadeInUp">
-
-      <!-- STEP 1 -->
-      <section id="step-1" class="game-step" data-step="1">
-        <div class="row justify-content-around align-items-center">
-          <div class="col-lg-5 col-md-5">
-            <img src="assets/game_logo.png" alt="" class="img-fluid animate__animated animate__zoomIn">
-          </div>
-
-          <!-- DRAGGABLE AREA (will be populated by JS) -->
-          <div class="col-lg-5 col-md-5">
-            <div id="draggables-1" class="row" aria-label="Draggable labels for step 1"></div>
-          </div>
-        </div>
-
-        <!-- Bottles for step 1 -->
-        <div class="d-flex flex-wrap justify-content-around mt-4" id="dropzone-area-1">
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area animate__animated" data-match="regular" aria-label="drop regular"></div>
-            <img src="assets/oral_C_regular_btl.png" alt="bottle" class="grab_bottom">
-          </div>
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area animate__animated" data-match="advanced" aria-label="drop advanced"></div>
-            <img src="assets/oral_C_Advanc_btl.png" alt="bottle" class="grab_bottom">
-          </div>
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area animate__animated" data-match="proexpert" aria-label="drop proexpert"></div>
-            <img src="assets/oral_C_Pro_Advance_btl.png" alt="bottle" class="grab_bottom">
-          </div>
-        </div>
-
-      </section>
-
-      <!-- STEP 2 (hidden initially) -->
-      <section id="step-2" class="game-step hidden animate__animated animate__fadeInUp animate__delay-2s" data-step="2">
-        <div class="row justify-content-around align-items-center">
-          <div class="col-lg-5 col-md-5">
-            <img src="assets/game_logo.png" alt="" class="img-fluid animate__animated animate__zoomIn">
-          </div>
-
-          <!-- DRAGGABLE AREA for step 2 -->
-          <div class="col-lg-5 col-md-5">
-            <div id="draggables-2" class="row flex-wrap" aria-label="Draggable labels for step 2"></div>
-          </div>
-        </div>
-
-        <!-- Bottles for step 2 (different placement class) -->
-        <div class="d-flex flex-wrap justify-content-around mt-4" id="dropzone-area-2">
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area2 animate__animated" data-match="regular" aria-label="drop regular step2"></div>
-            <img src="assets/stage_2_elements/Regular_btl_with_logo.png" alt="bottle" class="grab_bottom">
-          </div>
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area2 animate__animated" data-match="advanced" aria-label="drop advanced step2"></div>
-            <img src="assets/stage_2_elements/oral_C_Advanc_btl_with_logo.png" alt="bottle" class="grab_bottom">
-          </div>
-          <div class="position-relative mt-3">
-            <div class="position-absolute droppable grab_area2 animate__animated" data-match="proexpert" aria-label="drop proexpert step2"></div>
-            <img src="assets/stage_2_elements/oral_C_Advance_btl_with_logo.png" alt="bottle" class="grab_bottom">
-          </div>
-        </div>
-        <br>
-        <br>
-        <br>
-      </section>
-
-      <!-- FINAL SUMMARY -->
-      <section id="final-screen" class="hidden text-center py-5">
-        <h2 class="mb-3">🎉 Level Complete</h2>
-        <p class="mb-3">You completed <span id="completed-count">0</span> / <span id="total-steps">2</span> steps.</p>
-        <button id="restart-game" class="btn btn-primary">Restart Game</button>
-        <button id="clear-all-progress" class="btn btn-danger ms-2">Clear Progress</button>
-      </section>
-
-    </div> <!-- /game -->
-
-    <!-- GLOBAL CONTROLS -->
-    <div class="controls text-center mt-4">
-      <button id="reset-current" class="btn btn-warning animate__animated animate__pulse animate__infinite">Reset Current Step</button>
-      <button id="clear-storage" class="btn btn-danger ms-2 animate__animated animate__pulse animate__infinite">Clear All Progress</button>
-      <div class="score-box animate__animated animate__pulse animate__infinite" id="score-box">Score: <span id="score-count">0</span></div>
-    </div>
-
-  </div> <!-- /container -->
+  <!-- GLOBAL CONTROLS -->
+   <br>
+   <br>
+   <br>
+   <br>
+   <br>
+  <div class="container text-center controls">
+    <button id="reset-current" class="btn btn-warning">Reset Current Step</button>
+    <button id="clear-storage" class="btn btn-danger ms-2">Clear All Progress</button>
+    <div class="score-box" id="score-box">Score: <span id="score-count">0</span></div>
+  </div>
   <audio id="success-sound" src="success.mp3" preload="auto"></audio>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
 /* =========================
    Configuration
    ========================= */
+   /*************************************************************************
+   * Oral-C Multi-step Matching Game (Single-page)
+   * - 3 steps
+   * - Form saved to localStorage on Start
+   * - If player started but not finished → resume next time at first incomplete step
+   * - Plays success sound on correct drop, next, and final
+   * - Uses SweetAlert2 for prompts
+   *************************************************************************/
 
 const totalSteps = 2; // update if you add more steps
 const stepTemplates = {
-  1: [
-    { src: "assets/oral_C_Regular_logo.png", match: "regular" },
-    { src: "assets/Oral_C_Advance_logo.png", match: "advanced" },
-    { src: "assets/Oral_C_Pro_expert.png", match: "proexpert" }
-  ],
-  2: [
-    { src: "assets/stage_2_elements/oral_c_regular.png", match: "regular" },
-    { src: "assets/stage_2_elements/oral_c_advance.png", match: "advanced" },
-    { src: "assets/stage_2_elements/oral_c_pro_expert.png", match: "proexpert" }
-  ]
-};
+    1: {
+      labels: [
+        { src: "assets/oral_C_Regular_logo.png", match: "regular" },
+        { src: "assets/Oral_C_Advance_logo.png", match: "advanced" },
+        { src: "assets/Oral_C_Pro_expert.png", match: "proexpert" }
+      ],
+      bottles: [
+        { img: "assets/oral_C_regular_btl.png", match: "regular", dropClass: "grab_area" },
+        { img: "assets/oral_C_Advanc_btl.png", match: "advanced", dropClass: "grab_area" },
+        { img: "assets/oral_C_Pro_Advance_btl.png", match: "proexpert", dropClass: "grab_area" }
+      ]
+    },
+    2: {
+      labels: [
+        { src: "assets/stage_2_elements/oral_c_regular.png", match: "regular" },
+        { src: "assets/stage_2_elements/oral_c_advance.png", match: "advanced" },
+        { src: "assets/stage_2_elements/oral_c_pro_expert.png", match: "proexpert" }
+      ],
+      bottles: [
+        { img: "assets/stage_2_elements/Regular_btl_with_logo.png", match: "regular", dropClass: "grab_area2" },
+        { img: "assets/stage_2_elements/oral_C_Advanc_btl_with_logo.png", match: "advanced", dropClass: "grab_area2" },
+        { img: "assets/stage_2_elements/oral_C_Advance_btl_with_logo.png", match: "proexpert", dropClass: "grab_area2" }
+      ]
+    }
+  };
+/* ---------- Storage keys ---------- */
+  const PLAYERS_KEY = "oralc_players";          // array of player objects
+  const ACTIVE_KEY  = "oralc_active_index";     // integer index of active player in players array
+  const PROGRESS_PREFIX = "oralc_progress_";    // per-player progress stored as PROGRESS_PREFIX + index
 
-// session key
-const STORAGE_KEY = "oralc_game_steps";
+  /* ---------- Runtime state ---------- */
+  let currentStep = 1;
+  let currentCorrect = 0;
+/* ---------- Helper functions for storage ---------- */
 
-/* =========================
-   State
-   ========================= */
-let currentStep = 1;
-let currentCorrect = 0;
-
-function playSuccessSound() {
-  const audio = document.getElementById("success-sound");
-  if (audio) {
-    audio.currentTime = 0; // restart from beginning
-    audio.play();
+  // get players array (may be [])
+  function getPlayers() {
+    try {
+      return JSON.parse(localStorage.getItem(PLAYERS_KEY) || "[]");
+    } catch {
+      return [];
+    }
   }
-}
-/* load scores array from sessionStorage (array of booleans indexed by step-1) */
-function loadScores() {
-  const raw = sessionStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : Array(totalSteps).fill(false);
-}
-function saveScores(scores) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
-}
-function updateScoreUI() {
-  const scores = loadScores();
-  const completed = scores.filter(Boolean).length;
-  document.getElementById("score-count").textContent = completed;
-  document.getElementById("completed-count").textContent = completed;
-  document.getElementById("total-steps").textContent = totalSteps;
-}
+  function savePlayers(arr) {
+    localStorage.setItem(PLAYERS_KEY, JSON.stringify(arr));
+  }
 
-/* =========================
-   Utilities
-   ========================= */
-function makeDragId(step, idx) {
-  return `drag-${step}-${idx}-${Date.now().toString(36).slice(-4)}`;
-}
+  // set/get active player index
+  function setActiveIndex(i) {
+    localStorage.setItem(ACTIVE_KEY, String(i));
+  }
+  function getActiveIndex() {
+    const raw = localStorage.getItem(ACTIVE_KEY);
+    return raw === null ? null : Number(raw);
+  }
+  function clearActiveIndex() {
+    localStorage.removeItem(ACTIVE_KEY);
+  }
 
-/* clone node trick to remove old event listeners on droppables */
-function resetDroppableListeners(stepEl) {
-  const zones = stepEl.querySelectorAll(".droppable");
-  zones.forEach(z => {
-    const fresh = z.cloneNode(true);
-    z.parentNode.replaceChild(fresh, z);
-  });
-  return stepEl.querySelectorAll(".droppable");
-}
+  // progress per-player stored at PROGRESS_PREFIX + index
+  function getProgressForIndex(idx) {
+    if (idx === null || idx === undefined) return null;
+    try {
+      const raw = localStorage.getItem(PROGRESS_PREFIX + idx);
+      if (!raw) return null;
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : null;
+    } catch {
+      return null;
+    }
+  }
+  function saveProgressForIndex(idx, progressArr) {
+    localStorage.setItem(PROGRESS_PREFIX + idx, JSON.stringify(progressArr));
+  }
+  function initProgressForIndex(idx) {
+    const arr = Array(totalSteps).fill(false);
+    saveProgressForIndex(idx, arr);
+    return arr;
+  }
 
-/* =========================
-   Initialize draggables for a step
-   ========================= */
-function injectDraggables(step) {
-  const container = document.getElementById(`draggables-${step}`);
-  container.innerHTML = ""; // empty first
+  // play success sound
+  function playSuccessSound() {
+    const audio = document.getElementById("success-sound");
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(()=>{ /* ignore autoplay blocks */ });
+  }
 
-  const items = stepTemplates[step] || [];
-  items.forEach((it, idx) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "col-4";
+  // returns first incomplete step number or null if all complete
+  function firstIncompleteStep(arr) {
+    const i = arr.findIndex(x => !x);
+    return i === -1 ? null : i + 1;
+  }
 
-    const img = document.createElement("img");
-    img.src = it.src;
-    img.className = "img-fluid draggable";
-    img.draggable = true;
-    img.dataset.match = it.match;
-    img.dataset.dragId = makeDragId(step, idx);
+  // update score UI (completed count for active)
+  function updateScoreUI() {
+    const activeIndex = getActiveIndex();
+    if (activeIndex === null) {
+      document.getElementById("score-count").textContent = "0";
+      return;
+    }
+    const progress = getProgressForIndex(activeIndex) || Array(totalSteps).fill(false);
+    const count = progress.filter(Boolean).length;
+    document.getElementById("score-count").textContent = String(count);
+  }
 
-    // attach dragstart / dragend here
-    img.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("match", img.dataset.match);
-      e.dataTransfer.setData("src", img.src);
-      e.dataTransfer.setData("dragId", img.dataset.dragId);
-      // small effect
-      img.classList.add("dragging");
+  /* ---------- Rendering and game wiring ---------- */
+
+  // generate a small drag id
+  function makeDragId(step, idx) {
+    return `d${step}_${idx}_${Math.random().toString(36).slice(2,8)}`;
+  }
+
+  // Render a step into #game-root
+  function renderStep(step) {
+    const template = stepTemplates[step];
+    if (!template) {
+      document.getElementById("game-root").innerHTML = `<div class="p-4 text-center">Step ${step} template missing</div>`;
+      return;
+    }
+
+    // Compose markup
+    const root = document.getElementById("game-root");
+    root.innerHTML = `
+      <section id="step-${step}" class="game-step animate__animated animate__fadeInUp" data-step="${step}">
+        <div class="row justify-content-around align-items-center">
+          <div class="col-lg-5 col-md-5 text-center">
+            <img src="assets/game_logo.png" alt="logo" class="img-fluid">
+          </div>
+          <div class="col-lg-5 col-md-5">
+            <div id="draggables" class="row" aria-label="Draggable labels"></div>
+          </div>
+        </div>
+        <div id="bottles" class="d-flex flex-wrap justify-content-around mt-4"></div>
+      </section>
+    `;
+
+    // inject draggables
+    const draggablesContainer = document.getElementById("draggables");
+    template.labels.forEach((lbl, idx) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "col-4 text-center";
+      const img = document.createElement("img");
+      img.src = lbl.src;
+      img.alt = lbl.match;
+      img.className = "img-fluid draggable";
+      img.draggable = true;
+      img.style.maxWidth = "110px";
+      img.dataset.match = lbl.match;
+      img.setAttribute("data-drag-id", makeDragId(step, idx));
+      wrapper.appendChild(img);
+      draggablesContainer.appendChild(wrapper);
     });
-    img.addEventListener("dragend", () => img.classList.remove("dragging"));
 
-    wrapper.appendChild(img);
-    container.appendChild(wrapper);
-  });
-}
-
-/* =========================
-   Initialize drop zones for a step
-   - ensures listeners are fresh (no duplicates)
-   ========================= */
-function initDroppablesForStep(step) {
-  const stepEl = document.getElementById(`step-${step}`);
-  const droppables = resetDroppableListeners(stepEl); // fresh nodes
-  currentCorrect = 0;
-  const totalDroppables = droppables.length;
-
-  droppables.forEach(zone => {
-    // hover visual
-    zone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      zone.classList.add("hovered");
+    // inject bottles/dropzones
+    const bottlesContainer = document.getElementById("bottles");
+    template.bottles.forEach(b => {
+      const p = document.createElement("div");
+      p.className = "position-relative mt-3 text-center";
+      p.style.minWidth = "180px";
+      // drop zone
+      const dz = document.createElement("div");
+      dz.className = "position-absolute droppable " + b.dropClass;
+      dz.setAttribute("data-match", b.match);
+      dz.setAttribute("aria-label", "drop-" + b.match);
+      // bottle image
+      const bottleImg = document.createElement("img");
+      bottleImg.src = b.img;
+      bottleImg.alt = b.match;
+      bottleImg.className = "grab_bottom img-fluid";
+      p.appendChild(dz);
+      p.appendChild(bottleImg);
+      bottlesContainer.appendChild(p);
     });
-    zone.addEventListener("dragleave", () => zone.classList.remove("hovered"));
 
-    // drop logic
-    zone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      zone.classList.remove("hovered");
+    // Attach drag & drop handlers
+    attachDragHandlers();
+    attachDropHandlers();
+  }
 
-      const draggedMatch = e.dataTransfer.getData("match");
-      const draggedSrc = e.dataTransfer.getData("src");
-      const draggedId = e.dataTransfer.getData("dragId");
+  // Attach dragstart/dragend handlers to current draggables
+  function attachDragHandlers() {
+    const draggables = document.querySelectorAll("#draggables .draggable");
+    draggables.forEach(img => {
+      img.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("match", img.dataset.match);
+        e.dataTransfer.setData("src", img.src);
+        e.dataTransfer.setData("dragId", img.getAttribute("data-drag-id"));
+        img.classList.add("dragging");
+      });
+      img.addEventListener("dragend", () => img.classList.remove("dragging"));
+    });
+  }
 
-      // clear prior content (safe)
-      zone.innerHTML = "";
+  // Attach drop handlers to current dropzones. Uses clone trick to remove old listeners.
+  function attachDropHandlers() {
+    const stepSection = document.querySelector("#game-root .game-step");
+    if (!stepSection) return;
+    const zones = stepSection.querySelectorAll(".droppable");
+    zones.forEach(z => {
+      const fresh = z.cloneNode(true);
+      z.parentNode.replaceChild(fresh, z);
+    });
 
-      // correct?
-      if (zone.dataset.match === draggedMatch && !zone.classList.contains("correct")) {
-        zone.classList.remove("incorrect");
-        zone.classList.add('correct', 'animate__animated', 'animate__bounceIn');
-        // play success sound
+    const freshZones = stepSection.querySelectorAll(".droppable");
+    currentCorrect = 0;
+    const totalNeeded = freshZones.length;
+
+    freshZones.forEach(zone => {
+      zone.addEventListener("dragover", e => {
+        e.preventDefault();
+        zone.classList.add("hovered");
+      });
+      zone.addEventListener("dragleave", () => zone.classList.remove("hovered"));
+
+      zone.addEventListener("drop", e => {
+        e.preventDefault();
+        zone.classList.remove("hovered");
+
+        const draggedMatch = e.dataTransfer.getData("match");
+        const draggedSrc = e.dataTransfer.getData("src");
+        const draggedId = e.dataTransfer.getData("dragId");
+
+        // clear prior content
+        zone.innerHTML = "";
+
+        // correct?
+        if (zone.dataset.match === draggedMatch && !zone.classList.contains("correct")) {
+          // success animation + sound
+          zone.classList.add("correct", "animate__animated", "animate__bounceIn");
+          playSuccessSound();
+
+          // append image to zone
+          const img = document.createElement("img");
+          img.src = draggedSrc;
+          img.alt = draggedMatch;
+          img.className = "img-fluid";
+          img.style.maxHeight = "60px";
+          img.draggable = false;
+          zone.appendChild(img);
+
+          // remove original draggable (by dragId)
+          const original = document.querySelector(`[data-drag-id="${draggedId}"]`);
+          if (original) {
+            const wrapper = original.closest("div");
+            if (wrapper) wrapper.remove();
+            else original.remove();
+          }
+
+          currentCorrect++;
+          // if step completed -> show next
+          if (currentCorrect === totalNeeded) {
+            showNextButton();
+          }
+        } else {
+          // incorrect feedback
+          zone.classList.add("incorrect", "animate__animated", "animate__shakeX");
+          setTimeout(() => zone.classList.remove("incorrect", "animate__shakeX"), 700);
+        }
+      });
+    });
+  }
+
+  // Replace draggables area with Next button and attach click handler
+  function showNextButton() {
+    const draggables = document.getElementById("draggables");
+    draggables.innerHTML = `
+      <div class="text-center w-100">
+        <div id="next-btn" class="next-button animate__animated animate__fadeInUp">
+          <img src="assets/next_btn.png" alt="Next" width="150" style="cursor:pointer;">
+        </div>
+      </div>
+    `;
+    const nextBtn = document.getElementById("next-btn");
+    nextBtn.addEventListener("click", () => handleNextStep());
+  }
+
+  // Handles finishing the current step (update progress, move or finish)
+  function handleNextStep() {
+    const activeIndex = getActiveIndex();
+    if (activeIndex === null) {
+      Swal.fire({ icon: "error", title: "No active player found." });
+      return;
+    }
+    // load player's progress
+    let progress = getProgressForIndex(activeIndex);
+    if (!progress) progress = initProgressForIndex(activeIndex);
+
+    progress[currentStep - 1] = true;      // mark this step done
+    saveProgressForIndex(activeIndex, progress);
+    updateScoreUI();
+    playSuccessSound();
+
+    // move to next step or complete
+    if (currentStep < totalSteps) {
+      currentStep++;
+      renderStep(currentStep);
+    } else {
+      // final completion
+      setTimeout(() => {
         playSuccessSound();
-        // append image into the drop zone
-        const img = document.createElement("img");
-        img.src = draggedSrc;
-        img.className = "img-fluid";
-        img.style.maxHeight = "60px";
-        img.draggable = false; // do not allow re-dragging a dropped image
-        zone.appendChild(img);
+        const completedCount = progress.filter(Boolean).length;
+        Swal.fire({
+          title: "Well done!",
+          html: `You completed all steps.<br><strong>Score: ${completedCount}/${totalSteps}</strong>`,
+          icon: "success",
+          confirmButtonText: "Restart",
+          showCancelButton: true,
+          cancelButtonText: "Close"
+        }).then(result => {
+          if (result.isConfirmed) {
+            // reset this player's progress so they can play again
+            initProgressForIndex(activeIndex);
+            updateScoreUI();
+            currentStep = 1;
+            renderStep(currentStep);
+          } else {
+            // clear active so form will appear for a new player next load
+            clearActiveIndex();
+            // show final screen in the game-root
+            showFinalScreen();
+          }
+        });
+      }, 200);
+    }
+  }
 
-        // remove the original draggable element using dragId
-        const draggedEl = document.querySelector(`[data-drag-id="${draggedId}"]`);
-        if (draggedEl) {
-          // remove the wrapper (parent)
-          const wrapper = draggedEl.closest("div");
-          if (wrapper) wrapper.remove();
-          else draggedEl.remove();
+  // Renders a simple final screen after all steps and clears game area
+  function showFinalScreen() {
+    const root = document.getElementById("game-root");
+    const activeIndex = getActiveIndex();
+    const players = getPlayers();
+    const playerName = (players && players[activeIndex]) ? players[activeIndex].name : "Player";
+    const progress = getProgressForIndex(activeIndex) || Array(totalSteps).fill(true);
+    root.innerHTML = `
+      <section id="final" class="text-center py-5">
+        <h2 class="mb-3">🎉 Good job, ${playerName}!</h2>
+        <p class="mb-3">You completed <strong>${progress.filter(Boolean).length}/${totalSteps}</strong> steps.</p>
+        <div>
+          <button id="final-restart" class="btn btn-primary">Play Again</button>
+          <button id="final-new" class="btn btn-outline-light ms-2">New Player</button>
+        </div>
+      </section>
+    `;
+    // attach handlers
+    document.getElementById("final-restart").addEventListener("click", () => {
+      // re-init progress for this same player and start step 1
+      initProgressForIndex(activeIndex);
+      currentStep = 1;
+      renderStep(currentStep);
+      updateScoreUI();
+    });
+    document.getElementById("final-new").addEventListener("click", () => {
+      // clear active, show form for a new player
+      clearActiveIndex();
+      document.getElementById("game-root").innerHTML = "";
+      toggleFormVisibility(true);
+      updateScoreUI();
+    });
+  }
+
+  // Reset current step: re-render the same step
+  function resetCurrentStep() {
+    // re-render to clear dropped items and re-inject draggables
+    renderStep(currentStep);
+    Swal.fire({ position: "top", toast: true, icon: "info", title: "Step reset", showConfirmButton: false, timer: 1000 });
+  }
+
+  // Clear all progress: prompt and remove localStorage keys (players + progress)
+  function clearAllProgress() {
+    Swal.fire({
+      title: "Clear all saved progress?",
+      text: "This will remove saved players and all progress stored locally.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear all",
+      cancelButtonText: "Cancel"
+    }).then(result => {
+      if (result.isConfirmed) {
+        // remove players
+        localStorage.removeItem(PLAYERS_KEY);
+        // remove active
+        clearActiveIndex();
+        // remove any progress keys prefixed with PROGRESS_PREFIX
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(PROGRESS_PREFIX)) keysToRemove.push(k);
         }
-
-        currentCorrect++;
-
-        // when all droppables of this step are correct => show submit/next
-        if (currentCorrect === totalDroppables) {
-          showSubmitButtonForStep(step);
-        }
-      } else {
-        // incorrect feedback
-        zone.classList.remove("correct");
-        zone.classList.add("incorrect");
-        setTimeout(() => zone.classList.remove("incorrect"), 800);
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        // clear UI
+        document.getElementById("game-root").innerHTML = "";
+        toggleFormVisibility(true);
+        updateScoreUI();
+        Swal.fire({ icon: "success", title: "Cleared", showConfirmButton: false, timer: 900 });
       }
     });
-  });
-}
-
-/* =========================
-   Show submit / next button (replaces draggable area)
-   ========================= */
-function showSubmitButtonForStep(step) {
-  const container = document.getElementById(`draggables-${step}`);
-  // inject the animated next button into the same area
-  container.innerHTML = `
-    <div class="next-button animate__animated animate__bounceIn" id="submit-step-${step}" role="button" aria-pressed="false">
-      <img src="assets/next_btn.png" alt="Next" width="150">
-    </div>
-  `;
-
-  // attach click handler to the inserted element
-  const submitEl = document.getElementById(`submit-step-${step}`);
-  if (!submitEl) return;
-  submitEl.addEventListener("click", () => handleSubmitStep(step));
-}
-
-/* =========================
-   Handle submit / next step
-   - save progress to sessionStorage and move to next or final
-   ========================= */
-function handleSubmitStep(step) {
-  // mark step complete in session storage
-  const scores = loadScores();
-  scores[step - 1] = true;
-  saveScores(scores);
-  updateScoreUI();
-
-  // play success sound for completing the step
-  playSuccessSound();
-
-  // proceed to next step or final screen
-  const nextStep = step + 1;
-  if (nextStep <= totalSteps) {
-    // hide this step, show next
-    document.getElementById(`step-${step}`).classList.add("hidden");
-    document.getElementById(`step-${nextStep}`).classList.remove("hidden");
-    currentStep = nextStep;
-    // initialize next step
-    injectDraggables(nextStep);
-    initDroppablesForStep(nextStep);
-  } else {
-    // finished all steps -> show final summary
-    document.getElementById(`step-${step}`).classList.add("hidden");
-    document.getElementById("final-screen").classList.remove("hidden");
-    // play success sound for final completion
-    playSuccessSound();
   }
-}
 
-/* =========================
-   Reset current step (rebuild draggables + clear drops)
-   ========================= */
-function resetCurrentStep() {
-  const step = currentStep;
-  const stepEl = document.getElementById(`step-${step}`);
-  // clear droppables content & classes
-  stepEl.querySelectorAll(".droppable").forEach(z => {
-    z.classList.remove("correct", "incorrect", "hovered");
-    z.innerHTML = ""; // remove any appended images
-  });
-  // re-inject draggables
-  injectDraggables(step);
-  initDroppablesForStep(step);
-  // also hide final screen if visible
-  document.getElementById("final-screen").classList.add("hidden");
-}
-
-/* =========================
-   Clear all progress (session)
-   ========================= */
-function clearAllProgress() {
-  sessionStorage.removeItem(STORAGE_KEY);
-  // reset UI to step 1
-  document.getElementById("final-screen").classList.add("hidden");
-  for (let s = 1; s <= totalSteps; s++) {
-    document.getElementById(`step-${s}`).classList.add("hidden");
+  // Show or hide the initial player form
+  function toggleFormVisibility(show) {
+    const el = document.getElementById("player-form");
+    if (!el) return;
+    el.style.display = show ? "" : "none";
   }
-  document.getElementById("step-1").classList.remove("hidden");
-  currentStep = 1;
-  injectDraggables(1);
-  initDroppablesForStep(1);
-  updateScoreUI();
-}
 
-/* =========================
-   Restart full game (from final screen)
-   ========================= */
-function restartGame() {
-  clearAllProgress();
-}
+  // Start game flow (clicked start button)
+  function startGameFromForm() {
+    const name = document.getElementById("player-name").value.trim();
+    const email = document.getElementById("player-email").value.trim();
+    const mobile = document.getElementById("player-mobile").value.trim();
 
-/* =========================
-   Initialization on page load
-   ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  // set initial UI
-  document.getElementById("step-1").classList.remove("hidden");
-  for (let s = 2; s <= totalSteps; s++) {
-    document.getElementById(`step-${s}`).classList.add("hidden");
+    if (!name) { Swal.fire({ icon: "error", title: "Name required" }); return; }
+    if (!email) { Swal.fire({ icon: "error", title: "Email required" }); return; }
+    if (!mobile) { Swal.fire({ icon: "error", title: "Mobile required" }); return; }
+
+    // Save player to players array and make active
+    const players = getPlayers();
+    const newPlayer = { name, email, mobile, createdAt: (new Date()).toISOString() };
+    players.push(newPlayer);
+    savePlayers(players);
+    const newIndex = players.length - 1;
+    setActiveIndex(newIndex);
+
+    // initialize progress for this player
+    initProgressForIndex(newIndex);
+
+    // hide form and start step 1
+    toggleFormVisibility(false);
+    currentStep = 1;
+    renderStep(currentStep);
+    updateScoreUI();
+
+    Swal.fire({ icon: "success", title: `Good luck, ${name}!`, showConfirmButton: false, timer: 1000 });
   }
-  // inject and init step 1
-  injectDraggables(1);
-  initDroppablesForStep(1);
 
-  // hook global control buttons
-  document.getElementById("reset-current").addEventListener("click", resetCurrentStep);
-  document.getElementById("clear-storage").addEventListener("click", () => {
-    if (confirm("Clear all saved progress?")) {
-      clearAllProgress();
+  /* ---------- Initialization on load (resume logic) ---------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    // Hook start button
+    document.getElementById("start-game-btn").addEventListener("click", () => {
+      startGameFromForm();
+    });
+
+    // Hook global controls
+    document.getElementById("reset-current").addEventListener("click", () => resetCurrentStep());
+    document.getElementById("clear-storage").addEventListener("click", () => clearAllProgress());
+
+    // Resume logic: if an active player exists and progress incomplete, resume there
+    const activeIndex = getActiveIndex();
+    if (activeIndex !== null) {
+      const progress = getProgressForIndex(activeIndex);
+      if (progress) {
+        const incompleteStep = firstIncompleteStep(progress);
+        if (incompleteStep !== null) {
+          // resume from first incomplete step
+          toggleFormVisibility(false);
+          currentStep = incompleteStep;
+          renderStep(currentStep);
+          updateScoreUI();
+          return; // done
+        } else {
+          // player has finished all steps previously; show final screen
+          toggleFormVisibility(false);
+          showFinalScreen();
+          updateScoreUI();
+          return;
+        }
+      }
     }
-  });
 
-  document.getElementById("clear-all-progress").addEventListener("click", () => {
-    if (confirm("Clear all saved progress?")) clearAllProgress();
+    // Otherwise show the form (no active player)
+    toggleFormVisibility(true);
+    updateScoreUI();
   });
-  document.getElementById("restart-game").addEventListener("click", () => {
-    if (confirm("Restart the game?")) restartGame();
-  });
-
-  updateScoreUI();
-});
 </script>
 
 </body>
