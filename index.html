@@ -186,7 +186,7 @@
    <br>
    <br>
    <br>
-  <div class="container text-center controls">
+  <div class="container text-center controls d-none" id="controls">
     <button id="reset-current" class="btn btn-warning">Reset Current Step</button>
     <button id="clear-storage" class="btn btn-danger ms-2">Clear All Progress</button>
     <div class="score-box" id="score-box">Score: <span id="score-count">0</span></div>
@@ -650,7 +650,24 @@ const stepTemplates = {
     // Hook start button
     document.getElementById("start-game-btn").addEventListener("click", () => {
       startGameFromForm();
+      
     });
+    document.getElementById("start-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Hide the form after submit
+      document.getElementById("start-form").classList.add("d-none");
+
+      // Show controls (reset, clear storage, score)
+      document.getElementById("controls").classList.remove("d-none");
+
+      // Start the first game step
+      startGameStep(1);
+
+      // Save progress in localStorage
+      localStorage.setItem("gameStep", "1");
+    });
+
 
     // Hook global controls
     document.getElementById("reset-current").addEventListener("click", () => resetCurrentStep());
