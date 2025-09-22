@@ -70,85 +70,71 @@
 </head>
 <body>
 <div class="container py-5">
-
-  <!-- Step container -->
-  <div id="step1" class="game-step">
-    <h2 class="text-center mb-4">Step 1 - Match Labels</h2>
-    <div class="row justify-content-around align-items-center">
-      <div class="col-lg-5 col-md-5">
-        <img src="logo.png" alt="" class="img-fluid">
-      </div>
-      <div class="col-lg-5 col-md-5">
-        <div class="d-flex gap-2 flex-wrap" id="draggables1">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="regular">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="advanced">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="proexpert">
+    <!-- Game Step 1 -->
+    <div id="game_step_1" class="animate__animated animate__fadeInUp">
+      <div class="row justify-content-around align-items-center">
+        <div class="col-lg-5 col-md-5">
+          <img src="logo.png" alt="" class="img-fluid animate__animated animate__zoomIn">
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-5 col-md-5">
+          <div class="d-flex gap-2" id="draggables"></div>
         </div>
       </div>
-    </div>
 
-    <!-- Bottles -->
-    <div class="d-flex flex-wrap justify-content-around mt-4">
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="regular"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
-      </div>
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="advanced"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
-      </div>
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="proexpert"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 2 -->
-  <div id="step2" class="game-step d-none">
-    <h2 class="text-center mb-4">Step 2 - New Design</h2>
-    <div class="row justify-content-around align-items-center">
-      <div class="col-lg-5 col-md-5">
-        <img src="logo.png" alt="" class="img-fluid">
-      </div>
-      <div class="col-lg-5 col-md-5">
-        <div class="d-flex gap-2 flex-wrap" id="draggables2">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="one">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="two">
-          <img src="label.png" alt="" class="img-fluid draggable" draggable="true" data-match="three">
+      <!-- Bottles -->
+      <div class="d-flex flex-wrap justify-content-around mt-4" id="step1">
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area animate__animated" data-match="regular"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
+        </div>
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area animate__animated" data-match="advanced"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
+        </div>
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area animate__animated" data-match="proexpert"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
         </div>
       </div>
-    </div>
 
-    <!-- Bottles -->
-    <div class="d-flex flex-wrap justify-content-around mt-4">
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="one"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
-      </div>
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="two"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
-      </div>
-      <div class="position-relative">
-        <div class="position-absolute droppable grab_area" data-match="three"></div>
-        <img src="btl_1.png" alt="" class="grab_bottom">
+      <div class="text-center mt-5" id="step1">
+        <button id="resetBtn" class="btn btn-warning animate__animated animate__pulse animate__infinite">Reset Game</button>
       </div>
     </div>
-  </div>
 
-  <!-- Controls -->
-  <div class="text-center mt-4">
-    <button id="resetBtn" class="btn btn-warning">Reset Game</button>
-    <button id="clearSessionBtn" class="btn btn-danger">Clear Score</button>
-    <button id="nextStepBtn" class="btn btn-success animate__animated animate__bounceIn">Next Step</button>
-  </div>
+    <!-- Game Step 2 -->
+    <div id="game_step_2" class="animate__animated animate__fadeInUp animate__delay-2s">
+      <div class="row justify-content-around align-items-center">
+        <div class="col-lg-5 col-md-5">
+          <img src="logo.png" alt="" class="img-fluid animate__animated animate__zoomIn">
+        </div>
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-5 col-md-5">
+          <div class="d-flex gap-2" id="draggables2"></div>
+        </div>
+      </div>
 
-  <!-- Score -->
-  <div class="text-center mt-3">
-    <h4>Score: <span id="scoreDisplay">0</span></h4>
+      <div class="d-flex flex-wrap justify-content-around mt-4" id="step2">
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area2 animate__animated" data-match="regular"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
+        </div>
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area2 animate__animated" data-match="advanced"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
+        </div>
+        <div class="position-relative mt-38">
+          <div class="position-absolute droppable grab_area2 animate__animated" data-match="proexpert"></div>
+          <img src="btl_1.png" alt="" class="grab_bottom">
+        </div>
+      </div>
+
+      <div class="text-center mt-5" id="step2">
+        <button id="resetBtn2" class="btn btn-warning animate__animated animate__pulse animate__infinite">Reset Game</button>
+      </div>
+    </div>
   </div>
-</div>
 
 <script>
   let currentStep = 1;
