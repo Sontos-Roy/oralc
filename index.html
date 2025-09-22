@@ -196,8 +196,8 @@
    <br>
    <br>
    <br>
-  <div class="container text-center controls d-none" id="controls">
-    <!-- <button id="reset-current" class="btn btn-warning">Reset Current Step</button> -->
+  <div class="container text-center controls d-none hidden" id="controls">
+    <button id="reset-current" class="btn btn-warning">Reset Current Step</button>
     <button id="clear-storage" class="btn btn-danger ms-2">Clear All Progress</button>
     <div class="score-box" id="score-box">Score: <span id="score-count">0</span></div>
   </div>
@@ -582,48 +582,44 @@ const stepTemplates = {
       renderStep(currentStep);
     } else {
       // game finished
-      setTimeout(() => {
-        playSuccessSound();
-        const completedCount = progress.filter(Boolean).length;
+      // game finished
+        setTimeout(() => {
+          playSuccessSound();
+          const completedCount = progress.filter(Boolean).length;
 
-        // ⬅️ Save endTime + add history record
-        const players = getPlayers();
-        const player = players[activeIndex];
-        player.endTime = Date.now();
-        savePlayers(players);
+          // stop timer and hide it
+          stopTimer();
+          document.getElementById("timer-box").classList.add("hidden");
 
-        const duration = formatDuration(player.endTime - player.startTime);
+          // ⬅️ Save endTime + add history record
+          const players = getPlayers();
+          const player = players[activeIndex];
+          player.endTime = Date.now();
+          savePlayers(players);
 
-        // add to history
-        addHistory({
-          name: player.name,
-          email: player.email,
-          mobile: player.mobile,
-          score: `${completedCount}/${totalSteps}`,
-          duration,
-          startedAt: new Date(player.startTime).toLocaleString(),
-          endedAt: new Date(player.endTime).toLocaleString()
-        });
+          const duration = formatDuration(player.endTime - player.startTime);
 
-        Swal.fire({
-          title: "Well done!",
-          html: `You completed all steps.<br><strong>Score: ${completedCount}/${totalSteps}</strong><br><em>Time: ${duration}</em>`,
-          icon: "success",
-          confirmButtonText: "Restart",
-          showCancelButton: true,
-          cancelButtonText: "Close"
-        }).then(result => {
-          if (result.isConfirmed) {
-            initProgressForIndex(activeIndex);
-            updateScoreUI();
-            currentStep = 1;
-            renderStep(currentStep);
-          } else {
+          // add to history
+          addHistory({
+            name: player.name,
+            email: player.email,
+            mobile: player.mobile,
+            score: `${completedCount}/${totalSteps}`,
+            duration,
+            startedAt: new Date(player.startTime).toLocaleString(),
+            endedAt: new Date(player.endTime).toLocaleString()
+          });
+
+          Swal.fire({
+            title: "Well done!",
+            html: `You completed all steps.<br><strong>Score: ${completedCount}/${totalSteps}</strong><br><em>Time: ${duration}</em>`,
+            icon: "success",
+            confirmButtonText: "Show Result"
+          }).then(() => {
             clearActiveIndex();
             showFinalScreen();
-          }
-        });
-      }, 200);
+          });
+        }, 200);
     }
   }
 
