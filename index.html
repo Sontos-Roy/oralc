@@ -223,6 +223,7 @@
     <button id="clear-storage" class="btn btn-danger ms-2">Clear All Progress</button>
     <div class="score-box" id="score-box">Score: <span id="score-count">0</span></div>
   </div>
+  
   <!-- Timer -->
   <div id="timer-box" class="hidden">02:00</div>
   <audio id="success-sound" src="success.mp3" preload="auto"></audio>
@@ -748,8 +749,20 @@ const stepTemplates = {
       root.innerHTML = `
         <section id="final" class="text-center py-5">
           <h2 class="mb-3">🎉 Game Completed!</h2>
-          <h4 class="mb-4">History</h4>
-
+          
+          <div class="col-lg-6 m-auto">
+            <div class="row m-0">
+                <div class="col-lg-4 col-md-4 col-6 p-1">
+                  <img src="final01.jpg" alt="" class="w-100">
+                </div>    
+                <div class="col-lg-4 col-md-4 col-6 p-1">
+                  <img src="final02.jpg" alt="" class="w-100">
+                </div>    
+                <div class="col-lg-4 col-md-4 col-6 p-1">
+                  <img src="final03.jpg" alt="" class="w-100">
+                </div>    
+            </div>
+          </div>
           <!-- Scoreboard container (hidden by default) -->
           <div id="scoreboard-container" class="table-responsive mb-3" style="display:none; max-height:400px; overflow:auto;">
             <table class="table table-bordered table-striped">
