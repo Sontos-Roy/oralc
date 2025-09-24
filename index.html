@@ -748,9 +748,7 @@ const stepTemplates = {
 
       root.innerHTML = `
         <section id="final" class="text-center py-5">
-          <h2 class="mb-3">🎉 Game Completed!</h2>
-          
-          <div class="col-lg-6 m-auto">
+          <div class="col-lg-12 m-auto">
             <div class="row m-0">
                 <div class="col-lg-4 col-md-4 col-6 p-1">
                   <img src="final01.jpg" alt="" class="w-100">
@@ -783,8 +781,8 @@ const stepTemplates = {
           </div>
 
           <div class="mt-3 d-flex justify-content-center gap-2">
-            <button id="final-new" class="btn btn-primary">New Player</button>
-            <button id="show-scoreboard" class="btn btn-info">Show Scoreboard</button>
+            <button id="final-new" class="btn btn-danger border" style="background-color: red !important;">START NEW GAME</button>
+            <button id="show-scoreboard" class="btn btn-success border" style="background-color: green !important;">SEE SCORE BOARD</button>
           </div>
         </section>
       `;
