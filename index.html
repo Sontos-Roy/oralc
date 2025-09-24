@@ -273,8 +273,9 @@ const stepTemplates = {
     const arr = getHistory();
     arr.push(record);
     saveHistory(arr);
+    return true;
   }
-  
+
   function startTimer() {
     clearInterval(timerInterval);
     timeLeft = 120;
@@ -815,20 +816,51 @@ const stepTemplates = {
   /* ---------- Start game flow (add startTime) ---------- */
   function startGameFromForm() {
     const name = document.getElementById("player-name").value.trim();
-    const email = document.getElementById("player-email").value.trim();
+    const email = document.getElementById("player-email").value.trim().toLowerCase(); // normalize
     const mobile = document.getElementById("player-mobile").value.trim();
 
-    if (!name) { Swal.fire({ icon: "error", title: "Name required" }); return; }
-    if (!email) { Swal.fire({ icon: "error", title: "Email required" }); return; }
-    if (!mobile) { Swal.fire({ icon: "error", title: "Mobile required" }); return; }
+    if (!name) { 
+      Swal.fire({ icon: "error", title: "Name required" }); 
+      return; 
+    }
+    if (!email) { 
+      Swal.fire({ icon: "error", title: "Email required" }); 
+      return; 
+    }
+    if (!mobile) { 
+      Swal.fire({ icon: "error", title: "Mobile required" }); 
+      return; 
+    }
 
     const players = getPlayers();
+    if (players.some(p => p.email.toLowerCase() === email)) {
+      Swal.fire({ 
+        icon: "warning", 
+        title: "Email already used", 
+        text: "An active player with this email already exists. Please use a different email." 
+      });
+      return;
+    }
+
+    const historyArr = getHistory();
+    if (historyArr.some(h => h.email.toLowerCase() === email)) {
+      Swal.fire({ 
+        icon: "warning", 
+        title: "Email already used", 
+        text: "This email already has a completed game record. Please use a different email." 
+      });
+      return;
+    }
+
     const newPlayer = { 
-      name, email, mobile, 
+      name, 
+      email, 
+      mobile, 
       createdAt: (new Date()).toISOString(),
-      startTime: Date.now(),   // ⬅️ add game start time
+      startTime: Date.now(),
       endTime: null
     };
+
     players.push(newPlayer);
     savePlayers(players);
     const newIndex = players.length - 1;
@@ -844,12 +876,71 @@ const stepTemplates = {
     // show controls
     document.getElementById("controls").classList.remove("d-none");
 
-    // ⬅️ Start the countdown timer
+    // start countdown timer
     startTimer();
-    // ⬅️ Start looping game background sound
+    // start looping background sound
     playGameSound();
-    Swal.fire({ icon: "success", title: `Good luck, ${name}!`, showConfirmButton: false, timer: 1000 });
+
+    Swal.fire({ 
+      icon: "success", 
+      title: `Good luck, ${name}!`, 
+      showConfirmButton: false, 
+      timer: 1000 
+    });
   }
+  // Enable touch drag & drop for mobile
+  function enableTouchDragDrop() {
+    let draggedEl = null;
+
+    document.addEventListener("touchstart", function(e) {
+      const target = e.target.closest(".draggable");
+      if (!target) return;
+      draggedEl = target;
+
+      // simulate dragstart
+      const dragStartEvent = new Event("dragstart", { bubbles: true });
+      target.dispatchEvent(dragStartEvent);
+    });
+
+    document.addEventListener("touchmove", function(e) {
+      if (!draggedEl) return;
+      e.preventDefault(); // prevent scrolling while dragging
+      const touch = e.touches[0];
+      const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      if (elem && elem.classList.contains("droppable")) {
+        elem.classList.add("hovered");
+      }
+    });
+
+    document.addEventListener("touchend", function(e) {
+      if (!draggedEl) return;
+      const touch = e.changedTouches[0];
+      const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      if (elem && elem.classList.contains("droppable")) {
+        // simulate drop
+        const dropEvent = new Event("drop", { bubbles: true });
+        dropEvent.dataTransfer = {
+          getData: (type) => {
+            if (type === "match") return draggedEl.dataset.match;
+            if (type === "src") return draggedEl.src;
+            if (type === "dragId") return draggedEl.getAttribute("data-drag-id");
+            return "";
+          }
+        };
+        elem.dispatchEvent(dropEvent);
+      }
+
+      // simulate dragend
+      const dragEndEvent = new Event("dragend", { bubbles: true });
+      draggedEl.dispatchEvent(dragEndEvent);
+
+      draggedEl = null;
+    });
+  }
+
+  
 
   /* ---------- Initialization on load (resume logic) ---------- */
   document.addEventListener("DOMContentLoaded", () => {
@@ -858,7 +949,8 @@ const stepTemplates = {
       startGameFromForm();
       
     });
-
+    // call once after DOM ready
+    enableTouchDragDrop();
 
 
     // Hook global controls
