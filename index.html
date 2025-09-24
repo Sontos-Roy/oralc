@@ -32,7 +32,7 @@
       top: 25px;
       width: 65%;
       height: 50px;
-      transform: translate(26%, 0);
+      transform: translate(26%, 0) !important;
       border: none;
       font-weight: bold;
       font-size: 35px;
@@ -86,6 +86,7 @@
       align-items: center;
       justify-content: center;
       position: absolute;
+      z-index: 9;
     }
     .grab_area2 {
       top: calc(100% + 20px);
@@ -184,23 +185,23 @@
 <body>
   <!-- header / user inputs (unchanged look) -->
   <div class="text-center col-lg-4 col-md-5 m-auto" id="player-form">
-    <img src="assets/game_logo.png" alt="" class="img-fluid animate__animated animate__fadeInDown">
+    <img src="assets/game_logo_big.png" alt="" class="img-fluid animate__animated animate__fadeInDown">
     <div>
       <div class="mt-5">
         <div class="input_box">
-          <div class="input_bg"></div>
-          <input type="text" id="player-name" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn" placeholder="Name">
+          <div class="input_bg animate__animated animate__bounceIn"></div>
+          <input type="text" id="player-name" class="form-control shadow-none input_form text-center animate__animated animate__bounceIn" placeholder="Name">
         </div>
       </div>
       <div class="mt-5">
         <div class="input_box">
-          <div class="input_bg"></div>
-          <input type="text" id="player-email" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-1s" placeholder="Email">
+          <div class="input_bg animate__animated animate__bounceIn"></div>
+          <input type="text" id="player-email" class="form-control shadow-none input_form text-center animate__animated animate__bounceIn animate__delay-1s" placeholder="Email">
         </div>
       </div>
       <div class="mt-5">
         <div class="input_box">
-          <div class="input_bg"></div>
+          <div class="input_bg animate__animated animate__bounceIn"></div>
           <input type="text" id="player-mobile" class="form-control shadow-none input_form text-center animate__animated animate__fadeIn animate__delay-2s" placeholder="Mobile">
         </div>
       </div>
@@ -266,9 +267,9 @@ const stepTemplates = {
         { src: "assets/stage_2_elements/oral_c_pro_expert.png", match: "proexpert" }
       ],
       bottles: [
-        { img: "assets/stage_2_elements/oral_C_Advance_btl_with_logo.png", match: "proexpert", dropClass: "grab_area2" },
-        { img: "assets/stage_2_elements/oral_C_Advanc_btl_with_logo.png", match: "advanced", dropClass: "grab_area2" },
-        { img: "assets/stage_2_elements/Regular_btl_with_logo.png", match: "regular", dropClass: "grab_area2" },
+        { img: "assets/stage_2_elements/oral_C_Advance_btl_with_logo.png", match: "proexpert", dropClass: "grab_area2 animate__animated animate__bounceIn animate__delay-1s" },
+        { img: "assets/stage_2_elements/oral_C_Advanc_btl_with_logo.png", match: "advanced", dropClass: "grab_area2 animate__animated animate__bounceIn animate__delay-1s" },
+        { img: "assets/stage_2_elements/Regular_btl_with_logo.png", match: "regular", dropClass: "grab_area2 animate__animated animate__bounceIn animate__delay-1s" },
       ]
     }
   };
@@ -522,7 +523,7 @@ const stepTemplates = {
       const bottleImg = document.createElement("img");
       bottleImg.src = b.img;
       bottleImg.alt = b.match;
-      bottleImg.className = "grab_bottom img-fluid";
+      bottleImg.className = "grab_bottom img-fluid animate__animated animate__backInDown";
       p.appendChild(dz);
       p.appendChild(bottleImg);
       bottlesContainer.appendChild(p);
@@ -536,9 +537,9 @@ const stepTemplates = {
     const draggablesContainer = document.getElementById("draggables");
     const wrapper = document.createElement("div");
     if(step == 2){
-      wrapper.className = "col-12 text-center"; // full width
+      wrapper.className = "col-12 text-center animate__animated animate__backInRight"; // full width
     }else{
-      wrapper.className = "col-4 text-center"; // full width
+      wrapper.className = "col-4 text-center animate__animated animate__backInRight"; // full width
     }
     const img = document.createElement("img");
     img.src = lbl.src;
@@ -789,11 +790,18 @@ const stepTemplates = {
 
       // Hook New Player button
       document.getElementById("final-new").addEventListener("click", () => {
-        clearActiveIndex();
-        document.getElementById("game-root").innerHTML = "";
-        toggleFormVisibility(true);
-        updateScoreUI();
+          clearActiveIndex();
+          document.getElementById("game-root").innerHTML = "";
+          
+          // Clear form inputs
+          document.getElementById("player-name").value = "";
+          document.getElementById("player-email").value = "";
+          document.getElementById("player-mobile").value = "";
+
+          toggleFormVisibility(true);
+          updateScoreUI();
       });
+
 
       // Hook Show Scoreboard button
       document.getElementById("show-scoreboard").addEventListener("click", () => {
