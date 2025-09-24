@@ -131,6 +131,28 @@
     @media (max-width: 767px) {
       .grab_bottom { height: 220px; }
       .input_form { font-size: 20px; width: 75%; transform: translate(12%, 0); }
+      .grab_area {
+          top: 100px;
+          right: 60%;
+          transform: translateX(30px) !important;
+          height: 45px;
+          width: 80px;
+          background-color: transparent;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+      }
+
+      .droppable {
+          min-height: 45px;
+          border: 2px dashed #ccc;
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 12px;
+          transition: background 0.18s, border-color 0.18s;
+          position: relative;
+      }
     }
     .droppable.correct img {
       animation: bounceIn 0.8s;
@@ -898,7 +920,15 @@ const stepTemplates = {
       draggedEl = target;
 
       // simulate dragstart
-      const dragStartEvent = new Event("dragstart", { bubbles: true });
+      const dragStartEvent = new CustomEvent("dragstart", { bubbles: true });
+      dragStartEvent.dataTransfer = {
+        getData: (type) => {
+          if (type === "match") return draggedEl.dataset.match;
+          if (type === "src") return draggedEl.src;
+          if (type === "dragId") return draggedEl.getAttribute("data-drag-id");
+          return "";
+        }
+      };
       target.dispatchEvent(dragStartEvent);
     });
 
@@ -908,6 +938,8 @@ const stepTemplates = {
       const touch = e.touches[0];
       const elem = document.elementFromPoint(touch.clientX, touch.clientY);
 
+      // highlight droppable
+      document.querySelectorAll(".droppable").forEach(el => el.classList.remove("hovered"));
       if (elem && elem.classList.contains("droppable")) {
         elem.classList.add("hovered");
       }
@@ -920,7 +952,7 @@ const stepTemplates = {
 
       if (elem && elem.classList.contains("droppable")) {
         // simulate drop
-        const dropEvent = new Event("drop", { bubbles: true });
+        const dropEvent = new CustomEvent("drop", { bubbles: true });
         dropEvent.dataTransfer = {
           getData: (type) => {
             if (type === "match") return draggedEl.dataset.match;
@@ -933,7 +965,7 @@ const stepTemplates = {
       }
 
       // simulate dragend
-      const dragEndEvent = new Event("dragend", { bubbles: true });
+      const dragEndEvent = new CustomEvent("dragend", { bubbles: true });
       draggedEl.dispatchEvent(dragEndEvent);
 
       draggedEl = null;
